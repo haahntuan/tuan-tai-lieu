@@ -4,183 +4,194 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="webTitleTag">Tuốn Tài Liệu - Lớp 12</title>
+    <!-- Thêm thư viện Font Awesome để lấy logo Discord và icon tìm kiếm -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; }
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f6f9; color: #333; overflow-x: hidden; }
 
-        /* ---------- HEADER ---------- */
-        header {
-            display: flex; justify-content: space-between; align-items: center;
-            background-color: white; padding: 10px 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; width: 100%;
+        /* HEADER */
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background-color: white; 
+            padding: 10px 15px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            width: 100%; 
         }
         .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; padding: 5px; }
-        .logo-container { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        
+        /* CĂN GIỮA LOGO VÀ TÊN Ở THANH HEADER BÊN TRÊN */
+        .logo-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%); /* Căn chính giữa tuyệt đối */
+        }
         .logo-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
         .logo-text { font-size: 1.1rem; font-weight: bold; color: #d9534f; text-transform: uppercase; }
-        
-        /* Cụm Tìm Kiếm */
-        .search-container { display: flex; align-items: center; position: relative; }
-        .search-input-box {
-            display: none; width: 180px; padding: 6px 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 0.9rem; margin-right: 5px;
-        }
-        .search-input-box.active { display: block; }
-        .search-btn { font-size: 20px; cursor: pointer; background: none; border: none; padding: 5px; }
 
-        /* Khung Gợi Ý Tìm Kiếm */
-        .suggestions-box {
-            position: absolute; top: 40px; right: 0; width: 220px; background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            display: none; flex-direction: column; max-height: 200px; overflow-y: auto; z-index: 110;
+        /* KÍNH LÚP GÓC PHẢI */
+        .search-btn {
+            font-size: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+            color: #333;
         }
-        .suggestions-box.active { display: flex; }
-        .suggestion-item {
-            padding: 10px 12px; font-size: 0.9rem; color: #333; text-decoration: none; border-bottom: 1px solid #f0f0f0; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-        }
-        .suggestion-item:hover { background-color: #f5f5f5; color: #d9534f; }
-        .no-result { padding: 10px; font-size: 0.9rem; color: #999; text-align: center; }
 
-        /* ---------- SIDEBAR ---------- */
-        .sidebar {
-            position: fixed; top: 0; left: -280px; width: 250px; height: 100%; background-color: #fff; box-shadow: 2px 0 10px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease; padding: 20px; z-index: 200; visibility: hidden; 
+        /* KHUNG TÌM KIẾM (Ẩn/Hiện khi bấm kính lúp) */
+        .search-bar-wrapper {
+            display: none;
+            padding: 10px 15px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 55px; /* Nằm ngay dưới header */
+            z-index: 99;
         }
+        .search-bar-wrapper.active {
+            display: block;
+        }
+        .search-bar-wrapper input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 1rem;
+            outline: none;
+        }
+        .search-bar-wrapper input:focus {
+            border-color: #d9534f;
+        }
+
+        /* SIDEBAR (Giữ nguyên cấu trúc gốc) */
+        .sidebar { position: fixed; top: 0; left: -280px; width: 250px; height: 100%; background-color: #fff; box-shadow: 2px 0 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; padding: 20px; z-index: 200; visibility: hidden; display: flex; flex-direction: column; }
         .sidebar.active { transform: translateX(280px); visibility: visible; }
         .sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px; }
-        .sidebar-title { font-weight: bold; color: #333; margin: 0; }
-        .close-btn { font-size: 24px; background: none; border: none; cursor: pointer; color: #999; }
-        .sidebar-menu { display: flex; flex-direction: column; gap: 15px; }
-        .sidebar-item { text-decoration: none; color: #444; font-size: 1.05rem; padding: 10px; border-radius: 5px; display: flex; align-items: center; gap: 8px; }
-        .sidebar-item:hover { background-color: #f0f0f0; color: #d9534f; }
+        .sidebar-menu { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
+        
+        .sidebar-item { text-decoration: none; color: #444; font-size: 1.05rem; padding: 12px; border-radius: 5px; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .sidebar-item:hover { background-color: #f0f0f0; }
+        .sidebar-item.active { background-color: #d9534f; color: white; font-weight: bold; }
+
+        .sidebar-footer { margin-top: auto; padding-top: 20px; text-align: center; border-top: 1px solid #eee; }
+        .discord-link { font-size: 30px; color: #5865F2; text-decoration: none; }
+
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; z-index: 150; }
         .overlay.active { display: block; }
 
-        /* ---------- NỘI DUNG CHÍNH ---------- */
-        .content { padding: 20px; width: 100%; }
-        .course-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; transition: all 0.3s ease; }
-        .course-card.highlight { border: 2px solid #d9534f; background: #fff5f5; transform: scale(1.02); }
+        .content { padding: 20px; }
+        .course-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; }
         .btn-download { display: inline-block; background: #28a745; color: white; padding: 8px 12px; text-decoration: none; border-radius: 5px; font-size: 0.9rem; margin-top: 10px; }
     </style>
 </head>
 <body>
 
+    <!-- THANH BÊN TRÊN (HEADER) -->
     <header>
+        <!-- Góc trái: Menu -->
         <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        
+        <!-- Giữa: Logo + Tên (dùng absolute position) -->
         <a href="index.html" class="logo-container">
             <img class="logo-img" src="logo.png" alt="Logo">
-            <span class="logo-text" id="logoText">TUỐN TÀI LIỆU</span>
+            <span class="logo-text">TUỐN TÀI LIỆU</span>
         </a>
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-input-box" placeholder="Tìm tài liệu..." oninput="handleSearch()">
-            <button class="search-btn" onclick="toggleSearchBox()">🔍</button>
-            <div id="suggestionsBox" class="suggestions-box"></div>
-        </div>
+        
+        <!-- Góc phải: Kính lúp -->
+        <button class="search-btn" onclick="toggleSearchBar()">
+            <i class="fas fa-search"></i>
+        </button>
     </header>
 
+    <!-- THANH TÌM KIẾM (Xuất hiện khi bấm nút) -->
+    <div class="search-bar-wrapper" id="searchBar">
+        <input type="text" id="searchInput" placeholder="Nhập ký tự để tìm tài liệu..." onkeyup="filterDocs()">
+    </div>
+
+    <!-- SIDEBAR -->
     <div class="sidebar" id="mySidebar">
         <div class="sidebar-header">
             <h3 class="sidebar-title">Danh Mục Menu</h3>
-            <button class="close-btn" onclick="toggleSidebar()">✕</button>
+            <button class="close-btn" onclick="toggleSidebar()" style="background:none; border:none; font-size: 1.2rem; cursor:pointer;">✕</button>
         </div>
+        
         <nav class="sidebar-menu">
-            <a href="index.html" class="sidebar-item">🏠 Trang Chủ</a>
-            <a href="lop12.html" class="sidebar-item">📚 Tài Liệu Lớp 12</a>
-            <a href="https://discord.gg/Dqwtuhh3Gp" target="_blank" class="sidebar-item">💬 Server Discord Trao Đổi</a>
-        </nav>
+    <a href="index.html" class="sidebar-item">🏠 Trang Chủ</a>
+    <a href="lop12.html" class="sidebar-item">📚 Tài Liệu Lớp 12</a>
+    <!-- Thêm dòng này vào dưới mục Lớp 12 -->
+    <a href="azota.html" class="sidebar-item">📝 Bài Tập Azota</a>
+</nav>
+
+        <div class="sidebar-footer">
+            <a href="https://discord.gg/Dqwtuhh3Gp" target="_blank" class="discord-link">
+                <i class="fab fa-discord"></i>
+            </a>
+        </div>
     </div>
+    
     <div class="overlay" id="myOverlay" onclick="toggleSidebar()"></div>
 
     <main class="content">
-        <h2 id="sectionTitle">📚 Tài liệu chuyên sâu Lớp 12</h2>
-        <!-- Vùng chứa danh sách file tự động -->
+        <h2>📚 Tài liệu chuyên sâu Lớp 12</h2>
         <div id="documentContainer"></div>
     </main>
 
     <script>
-        /* ========================================================
-           KHU VỰC CHỈNH SỬA NHANH CHO BRO (CHỈ CẦN SỬA Ở ĐÂY)
-           ======================================================== */
-        
-        // 1. CHỈNH SỬA TITLE TẠI ĐÂY
-        const WEBSITE_TITLE = "Tuốn Tài Liệu - Lớp 12";
-        const LOGO_TEXT = "TUỐN TÀI LIỆU";
-        const SECTION_TITLE = "📚 Tài liệu chuyên sâu Lớp 12";
-
-        // 2. QUẢN LÝ DANH SÁCH FILE TẠI ĐÂY (Thêm, bớt, sửa tùy ý)
         const DATA_DOCUMENTS = [
-            {
-                title: "1. Tài liệu toán 12 cô Phan Nhật Linh.",
-                desc: "Tổng hợp chương trình toán lớp 12 và bài tập vận dụng của cô Phan Nhật Linh.",
-                link: "https://drive.google.com/drive/folders/15IvabjJjaktiOYNbosuLibXbwWak_2iF "
-            },
-
+            {title: "1. Tài liệu Toán 12 cô Phan Nhật Linh.", desc: "Tổng hợp chương trình toán lớp 12.", link: "https://drive.google.com/drive/folders/15IvabjJjaktiOYNbosuLibXbwWak_2iF"},
+            // Tôi thêm tạm vài dòng để bạn test tìm kiếm, bạn có thể thay thế bằng dữ liệu thật của bạn
+            {title: "2. Tài liệu Sinh Học lớp 12", desc: "Tổng hợp chương trình sinh học lớp 12.", link: "https://drive.google.com/drive/folders/1gt_uKQpLw_C8jb6QHql3_Gy2Tc9MM-ko"},
+            {title: "3. 10 bộ đề luyện thi môn toán THPT 2025", desc: "Bộ 10 đề luyện thi THPT môn toán 2025.", link: "https://drive.google.com/drive/folders/1FGZoJluLB8zZwLQ2jfhDetrDdSCs5on4"}
         ];
-
-        /* ========================================================
-           KHU VỰC HỆ THỐNG TỰ ĐỘNG XỬ LÝ (KHÔNG CẦN CHẠM VÀO)
-           ======================================================== */
-        document.getElementById("webTitleTag").innerText = WEBSITE_TITLE;
-        document.getElementById("logoText").innerText = LOGO_TEXT;
-        document.getElementById("sectionTitle").innerText = SECTION_TITLE;
-
+        
         const container = document.getElementById("documentContainer");
-        DATA_DOCUMENTS.forEach((doc, index) => {
-            container.innerHTML += `
-                <div class="course-card" id="doc-${index}">
-                    <h3>${doc.title}</h3>
-                    <p>${doc.desc}</p>
-                    <a href="${doc.link}" target="_blank" class="btn-download">📥 Tải về ngay</a>
-                </div>`;
-        });
-
-        function toggleSidebar() {
-            document.getElementById("mySidebar").classList.toggle("active");
-            document.getElementById("myOverlay").classList.toggle("active");
-        }
-
-        function toggleSearchBox() {
-            const inputBox = document.getElementById("searchInput");
-            const sugBox = document.getElementById("suggestionsBox");
-            inputBox.classList.toggle("active");
-            if(inputBox.classList.contains("active")) { inputBox.focus(); } else { inputBox.value = ""; sugBox.classList.remove("active"); }
-        }
-
-        function handleSearch() {
-            const query = document.getElementById("searchInput").value.trim().toLowerCase();
-            const sugBox = document.getElementById("suggestionsBox");
-            sugBox.innerHTML = "";
-            if (query === "") { sugBox.classList.remove("active"); return; }
-
-            let hasResults = false;
-            DATA_DOCUMENTS.forEach((doc, index) => {
-                if (doc.title.toLowerCase().includes(query)) {
-                    hasResults = true;
-                    const item = document.createElement("div");
-                    item.className = "suggestion-item";
-                    item.innerText = doc.title;
-                    item.onclick = function() {
-                        sugBox.classList.remove("active");
-                        document.getElementById("searchInput").value = doc.title;
-                        const card = document.getElementById(`doc-${index}`);
-                        card.scrollIntoView({ behavior: "smooth", block: "center" });
-                        card.classList.add("highlight");
-                        setTimeout(() => card.classList.remove("highlight"), 2000);
-                    };
-                    sugBox.appendChild(item);
-                }
-            });
-
-            if (!hasResults) {
-                const noResultDiv = document.createElement("div");
-                noResultDiv.className = "no-result";
-                noResultDiv.innerText = "Không tìm thấy tài liệu";
-                sugBox.appendChild(noResultDiv);
+        
+        function renderDocs(data) {
+            container.innerHTML = "";
+            if (data.length === 0) {
+                container.innerHTML = "<p>Không tìm thấy tài liệu nào phù hợp.</p>";
+                return;
             }
-            sugBox.classList.add("active");
+            data.forEach((doc) => {
+                container.innerHTML += `<div class="course-card"><h3>${doc.title}</h3><p>${doc.desc}</p><a href="${doc.link}" target="_blank" class="btn-download">📥 Tải về ngay</a></div>`;
+            });
+        }
+        
+        // Gọi hàm hiển thị ban đầu
+        renderDocs(DATA_DOCUMENTS);
+
+        function toggleSidebar() { 
+            document.getElementById("mySidebar").classList.toggle("active"); 
+            document.getElementById("myOverlay").classList.toggle("active"); 
         }
 
-        document.addEventListener("click", function(e) {
-            if (!e.target.closest(".search-container")) { document.getElementById("suggestionsBox").classList.remove("active"); }
-        });
+        // Bật/tắt khung tìm kiếm
+        function toggleSearchBar() {
+            const bar = document.getElementById("searchBar");
+            bar.classList.toggle("active");
+            if (bar.classList.contains("active")) {
+                document.getElementById("searchInput").focus();
+            }
+        }
+
+        // Lọc tài liệu theo ký tự
+        function filterDocs() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const filtered = DATA_DOCUMENTS.filter(doc => 
+                doc.title.toLowerCase().includes(query) || doc.desc.toLowerCase().includes(query)
+            );
+            renderDocs(filtered);
+        }
     </script>
 </body>
 </html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuốn Tài Liệu - Bài Tập Azota</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f6f9; color: #333; overflow-x: hidden; }
+
+        /* HEADER */
+        header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background-color: white; padding: 10px 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            position: sticky; top: 0; z-index: 100; width: 100%;
+        }
+        .header-center { 
+            position: absolute; left: 50%; transform: translateX(-50%); 
+            display: flex; align-items: center; gap: 8px; text-decoration: none; 
+        }
+        .menu-btn { font-size: 24px; cursor: pointer; background: none; border: none; z-index: 101; padding: 5px; }
+        .logo-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        .logo-text { font-weight: bold; color: #d9534f; text-transform: uppercase; font-size: 1.1rem; }
+
+        /* SIDEBAR */
+        .sidebar { position: fixed; top: 0; left: -280px; width: 250px; height: 100%; background-color: #fff; box-shadow: 2px 0 10px rgba(0,0,0,0.2); transition: transform 0.3s ease; padding: 20px; z-index: 200; visibility: hidden; display: flex; flex-direction: column; }
+        .sidebar.active { transform: translateX(280px); visibility: visible; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px; }
+        .sidebar-title { margin: 0; font-size: 1.2rem; color: #333; }
+        .close-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #888; padding: 0; }
+        .sidebar-menu { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
+        .sidebar-item { text-decoration: none; color: #444; font-size: 1.05rem; padding: 12px; border-radius: 50px; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .sidebar-item:hover { background-color: #f0f0f0; }
+        .sidebar-item.active { background-color: #d9534f; color: white; font-weight: bold; }
+        .sidebar-footer { margin-top: auto; padding-top: 20px; text-align: center; border-top: 1px solid #eee; }
+        .discord-link { font-size: 30px; color: #5865F2; text-decoration: none; }
+        
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; z-index: 150; }
+        .overlay.active { display: block; }
+
+        /* CONTENT */
+        .content { padding: 20px; max-width: 900px; margin: auto; }
+        .page-title { border-left: 5px solid #d9534f; padding-left: 10px; margin-bottom: 25px; color: #333; font-size: 1.4rem; }
+
+        /* KHỐI MÔN HỌC (ACCORDION) */
+        .subject-block {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        /* THANH TIÊU ĐỀ MÔN HỌC */
+        .accordion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            cursor: pointer;
+            background: #fff;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .accordion-header:hover {
+            background: #fdfdfd;
+        }
+        .accordion-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Mũi tên lên xuống */
+        .accordion-header .arrow-icon {
+            font-size: 1rem;
+            color: #888;
+            transition: transform 0.3s ease;
+        }
+        
+        /* Khi mở ra xoay ngược mũi tên */
+        .accordion-header.active .arrow-icon {
+            transform: rotate(180deg);
+        }
+
+        /* PHẦN NỘI DUNG BÊN TRONG KHI MỞ */
+        .accordion-content {
+            display: none; /* Ẩn mặc định */
+            padding: 20px;
+            border-top: 1px solid #f5f5f5;
+            background: #fafafa;
+        }
+        .accordion-content.show {
+            display: block; /* Hiện khi có class .show */
+        }
+
+        /* LƯỚI BÀI TẬP 2 CỘT */
+        .azota-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .azota-card { 
+            background: white; padding: 15px; border-radius: 12px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.03); text-align: center;
+            border: 1px solid #eaeaea; transition: transform 0.2s ease, box-shadow 0.2s;
+        }
+        .azota-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
+        .azota-card h4 { font-size: 0.95rem; margin: 0 0 12px 0; color: #555; }
+        .btn-link { 
+            display: inline-block; width: 100%; background: #d9534f; color: white; padding: 10px; 
+            text-decoration: none; border-radius: 8px; font-size: 0.85rem; font-weight: bold; transition: background 0.2s;
+        }
+        .btn-link:hover { background: #c9302c; }
+
+        /* Chữ hiển thị khi chưa có bài tập */
+        .empty-text {
+            color: #999;
+            font-style: italic;
+            margin: 5px 0;
+            font-size: 0.95rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        <a href="index.html" class="header-center">
+            <img class="logo-img" src="logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/35'">
+            <span class="logo-text">TUỐN TÀI LIỆU</span>
+        </a>
+        <div style="width: 35px;"></div>
+    </header>
+
+    <div class="sidebar" id="mySidebar">
+        <div class="sidebar-header">
+            <h3 class="sidebar-title">Danh Mục Menu</h3>
+            <button class="close-btn" onclick="toggleSidebar()">✕</button>
+        </div>
+        <nav class="sidebar-menu">
+            <a href="index.html" class="sidebar-item">🏠 Trang Chủ</a>
+            <a href="lop12.html" class="sidebar-item">📚 Tài Liệu Lớp 12</a>
+            <a href="azota.html" class="sidebar-item active">📝 Bài Tập Azota</a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="https://discord.gg/Dqwtuhh3Gp" target="_blank" class="discord-link"><i class="fab fa-discord"></i></a>
+        </div>
+    </div>
+    <div class="overlay" id="myOverlay" onclick="toggleSidebar()"></div>
+
+    <main class="content">
+        <h2 class="page-title">📝 Bài tập Azota Lớp 12</h2>
+        
+        <!-- Khối Môn Lịch Sử (Mở sẵn mặc định bằng class active và show) -->
+        <div class="subject-block">
+            <div class="accordion-header active" onclick="toggleAccordion(this)">
+                <h3 style="color:#d9534f;">📋 Lịch sử 12</h3>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+            </div>
+            <div class="accordion-content show">
+                <div class="azota-grid" id="historyAzota"></div>
+            </div>
+        </div>
+
+        <!-- Khối Môn Toán -->
+        <div class="subject-block">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h3>📐 Toán 12 (Đang cập nhật)</h3>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+            </div>
+            <div class="accordion-content">
+                <p class="empty-text">Hiện tại chưa có file bài tập cho môn học này.</p>
+            </div>
+        </div>
+
+        <!-- Khối Môn Ngữ Văn -->
+        <div class="subject-block">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <h3>📖 Văn 12 (Đang cập nhật)</h3>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+            </div>
+            <div class="accordion-content">
+                <p class="empty-text">Hiện tại chưa có file bài tập cho môn học này.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Mảng link bài tập Lịch sử
+        const historyLinks = [
+            "https://azota.vn/vi/de-thi/cpa9pv", "https://azota.vn/vi/de-thi/iisr3b",
+            "https://azota.vn/vi/de-thi/8srcca", "https://azota.vn/vi/de-thi/bm7l69",
+            "https://azota.vn/vi/de-thi/eomrap", "https://azota.vn/vi/de-thi/cfji0q",
+            "https://azota.vn/vi/de-thi/rdhuln", "https://azota.vn/vi/de-thi/hroiy5"
+        ];
+
+        // Đổ dữ liệu bài tập Lịch sử vào lưới
+        const container = document.getElementById("historyAzota");
+        historyLinks.forEach((link, index) => {
+            container.innerHTML += `
+                <div class="azota-card">
+                    <h4>Bài tập số ${index + 1}</h4>
+                    <a href="${link}" target="_blank" class="btn-link">Làm bài ngay</a>
+                </div>
+            `;
+        });
+
+        // Hàm Đóng/Mở khối môn học (Accordion)
+        function toggleAccordion(header) {
+            header.classList.toggle("active");
+            const content = header.nextElementSibling;
+            content.classList.toggle("show");
+        }
+
+        // Hàm đóng mở sidebar menu
+        window.toggleSidebar = () => {
+            document.getElementById("mySidebar").classList.toggle("active");
+            document.getElementById("myOverlay").classList.toggle("active");
+        };
+    </script>
+</body>
+</html>
